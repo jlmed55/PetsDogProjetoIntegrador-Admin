@@ -19,23 +19,23 @@ export function PrivateRoutes() {
             />
 
             <Route
-                path="/files"
-                element={
-                    <ProtectedRoute
-                        allowedRoles={["admin", "user"]}
-                    >
-                        <FilesPage />
-                    </ProtectedRoute>
-                }
-            />
-
-            <Route
                 path="/categories"
                 element={
                     <ProtectedRoute
                         allowedRoles={["admin", "user"]}
                     >
                         <CategoriesPage />
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
+                path="/files"
+                element={
+                    <ProtectedRoute
+                        allowedRoles={["admin", "user"]}
+                    >
+                        <FilesPage />
                     </ProtectedRoute>
                 }
             />
