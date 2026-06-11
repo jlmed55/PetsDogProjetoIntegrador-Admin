@@ -6,17 +6,16 @@ export interface LoginData {
 }
 
 export interface LoginResponse {
-    token: string;
-    user:{
+    access_token: string;
+    user: {
         name: string;
         email: string;
-        role : "admin" | "user"
-    }
+        role: "admin" | "user";
+    };
 }
 
 export async function loginRequest(data: LoginData): Promise<LoginResponse> {
-    const reponse =await api.post<LoginResponse>('/auth', data);
+    const response = await api.post<LoginResponse>("/auth/login", data);
 
-    return reponse.data;
-
+    return response.data;
 }

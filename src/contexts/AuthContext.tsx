@@ -12,7 +12,7 @@ function getStoredUser(): LoginResponse["user"] | null {
   const storedUser = localStorage.getItem("user")
 
   if (!storedUser) {
-    return
+    return null
   }
 
   return JSON.parse(storedUser)
@@ -22,7 +22,7 @@ function getStoredToken(): string | null {
   const storedToken = localStorage.getItem("token")
 
   if (!storedToken) {
-    return
+    return null
   }
 
   return storedToken
@@ -37,11 +37,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const signIn = async (data: LoginData): Promise<void> => {
     const response = await loginRequest(data)
 
-    localStorage.setItem("token", response.token)
+    localStorage.setItem("token", response.access_token)
     localStorage.setItem("user", JSON.stringify(response.user))
 
     setUser(response.user)
-    setToken(response.token)
+    setToken(response.access_token)
   }
 
   const logout = async (): Promise<void> => {
