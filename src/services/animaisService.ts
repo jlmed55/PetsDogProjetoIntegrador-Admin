@@ -6,6 +6,11 @@ export async function listarAnimais(): Promise<Animal[]> {
     return response.data;
 }
 
+export async function buscarAnimalPorId(id: string): Promise<Animal> {
+    const response = await api.get<Animal>(`/animais/${id}`);
+    return response.data;
+}
+
 export async function criarAnimal(data: Animal): Promise<Animal> {
     const response = await api.post<Animal>("/animais", data);
     return response.data;

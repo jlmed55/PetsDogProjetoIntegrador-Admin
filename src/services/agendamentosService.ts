@@ -6,6 +6,11 @@ export async function listarAgendamentos(): Promise<Agendamento[]> {
     return response.data;
 }
 
+export async function buscarAgendamentoPorId(id: string): Promise<Agendamento> {
+    const response = await api.get<Agendamento>(`/agendamentos/${id}`);
+    return response.data;
+}
+
 export async function criarAgendamento(data: AgendamentoForm): Promise<Agendamento> {
     const response = await api.post<Agendamento>("/agendamentos", data);
     return response.data;

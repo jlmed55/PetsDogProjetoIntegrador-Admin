@@ -6,6 +6,11 @@ export async function listarClientes(): Promise<Cliente[]> {
     return response.data;
 }
 
+export async function buscarClientePorId(id: string): Promise<Cliente> {
+    const response = await api.get<Cliente>(`/clientes/${id}`);
+    return response.data;
+}
+
 export async function criarCliente(data: Cliente): Promise<Cliente> {
     const response = await api.post<Cliente>("/clientes", data);
     return response.data;

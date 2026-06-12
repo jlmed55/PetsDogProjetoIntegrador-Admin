@@ -6,6 +6,11 @@ export async function listarProfissionais(): Promise<Profissional[]> {
     return response.data;
 }
 
+export async function buscarProfissionalPorId(id: string): Promise<Profissional> {
+    const response = await api.get<Profissional>(`/profissionais/${id}`);
+    return response.data;
+}
+
 export async function criarProfissional(data: Profissional): Promise<Profissional> {
     const response = await api.post<Profissional>("/profissionais", data);
     return response.data;

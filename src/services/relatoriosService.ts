@@ -6,6 +6,11 @@ export async function listarRelatorios(): Promise<Relatorio[]> {
     return response.data;
 }
 
+export async function buscarRelatorioPorId(id: string): Promise<Relatorio> {
+    const response = await api.get<Relatorio>(`/relatorios/${id}`);
+    return response.data;
+}
+
 export async function criarRelatorio(data: Relatorio): Promise<Relatorio> {
     const response = await api.post<Relatorio>("/relatorios", data);
     return response.data;

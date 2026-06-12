@@ -6,6 +6,11 @@ export async function listarServicos(): Promise<Servico[]> {
     return response.data;
 }
 
+export async function buscarServicoPorId(id: string): Promise<Servico> {
+    const response = await api.get<Servico>(`/servicos/${id}`);
+    return response.data;
+}
+
 export async function criarServico(data: Servico): Promise<Servico> {
     const response = await api.post<Servico>("/servicos", data);
     return response.data;

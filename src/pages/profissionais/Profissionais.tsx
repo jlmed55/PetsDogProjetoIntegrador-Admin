@@ -1,26 +1,19 @@
 import { useEffect, useState } from "react";
-import type { ChangeEvent, FormEvent } from "react";
 import {
     listarProfissionais,
-    criarProfissional,
-    atualizarProfissional,
     removerProfissional,
 } from "../../services/profissionaisService";
 import type { Profissional } from "../../types/profissionais";
-
-const formVazio: Profissional = {
-    name: "",
-    especialidade: "",
-    disponibilidade_inicio: "",
-    disponibilidade_fim: "",
-};
+import type { ModalMode } from "../../types/modal";
+import { ProfissionaisCard } from "../../components/profissionais/ProfissionaisCard";
 
 export function ProfissionaisPage() {
     const [profissionais, setProfissionais] = useState<Profissional[]>([]);
-    const [form, setForm] = useState<Profissional>(formVazio);
-    const [editandoId, setEditandoId] = useState<string | null>(null);
     const [mensagem, setMensagem] = useState("");
     const [erro, setErro] = useState("");
+    const [modalAberto, setModalAberto] = useState(false);
+    const [modalMode, setModalMode] = useState<ModalMode>("create");
+    const [selecionadoId, setSelecionadoId] = useState<string | null>(null);
 
     async function carregar() {
         try {
@@ -34,40 +27,10 @@ export function ProfissionaisPage() {
         carregar();
     }, []);
 
-    function handleChange(e: ChangeEvent<HTMLInputElement>) {
-        setForm({ ...form, [e.target.name]: e.target.value });
-    }
-
-    async function handleSubmit(e: FormEvent) {
-        e.preventDefault();
-        setErro("");
-        setMensagem("");
-        try {
-            if (editandoId) {
-                await atualizarProfissional(editandoId, form);
-                setMensagem("Profissional atualizado com sucesso!");
-            } else {
-                await criarProfissional(form);
-                setMensagem("Profissional criado com sucesso!");
-            }
-            setForm(formVazio);
-            setEditandoId(null);
-            carregar();
-        } catch {
-            setErro("Erro ao salvar profissional.");
-        }
-    }
-
-    function handleEditar(profissional: Profissional) {
-        setForm({
-            name: profissional.name,
-            especialidade: profissional.especialidade,
-            disponibilidade_inicio: (profissional.disponibilidade_inicio ?? "").slice(0, 16),
-            disponibilidade_fim: (profissional.disponibilidade_fim ?? "").slice(0, 16),
-        });
-        setEditandoId(profissional._id ?? null);
-        setMensagem("");
-        setErro("");
+    function abrirModal(mode: ModalMode, id: string | null = null) {
+        setModalMode(mode);
+        setSelecionadoId(id);
+        setModalAberto(true);
     }
 
     async function handleExcluir(id: string) {
@@ -83,25 +46,15 @@ export function ProfissionaisPage() {
 
     return (
         <div>
-            <h1 className="mb-4 text-2xl font-bold">Profissionais</h1>
+            <div className="mb-4 flex items-center justify-between">
+                <h1 className="text-2xl font-bold">Profissionais</h1>
+                <button onClick={() => abrirModal("create")} className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+                    Criar novo
+                </button>
+            </div>
 
             {mensagem && <p className="mb-2 text-green-600">{mensagem}</p>}
             {erro && <p className="mb-2 text-red-600">{erro}</p>}
-
-            <form onSubmit={handleSubmit} className="mb-6 flex flex-wrap gap-2">
-                <input name="name" placeholder="Nome" value={form.name} onChange={handleChange} required className="rounded border px-2 py-1" />
-                <input name="especialidade" placeholder="Especialidade" value={form.especialidade} onChange={handleChange} required className="rounded border px-2 py-1" />
-                <input name="disponibilidade_inicio" type="datetime-local" value={form.disponibilidade_inicio} onChange={handleChange} required className="rounded border px-2 py-1" />
-                <input name="disponibilidade_fim" type="datetime-local" value={form.disponibilidade_fim} onChange={handleChange} required className="rounded border px-2 py-1" />
-                <button type="submit" className="rounded bg-blue-600 px-4 py-1 text-white hover:bg-blue-700">
-                    {editandoId ? "Atualizar" : "Criar"}
-                </button>
-                {editandoId && (
-                    <button type="button" onClick={() => { setForm(formVazio); setEditandoId(null); }} className="rounded bg-gray-400 px-4 py-1 text-white">
-                        Cancelar
-                    </button>
-                )}
-            </form>
 
             <table className="w-full border-collapse text-left">
                 <thead>
@@ -121,13 +74,22 @@ export function ProfissionaisPage() {
                             <td className="p-2">{(profissional.disponibilidade_inicio ?? "").slice(0, 16).replace("T", " ")}</td>
                             <td className="p-2">{(profissional.disponibilidade_fim ?? "").slice(0, 16).replace("T", " ")}</td>
                             <td className="p-2">
-                                <button onClick={() => handleEditar(profissional)} className="mr-2 text-blue-600">Editar</button>
+                                <button onClick={() => abrirModal("view", profissional._id!)} className="mr-2 text-gray-600">Visualizar</button>
+                                <button onClick={() => abrirModal("edit", profissional._id!)} className="mr-2 text-blue-600">Editar</button>
                                 <button onClick={() => handleExcluir(profissional._id!)} className="text-red-600">Excluir</button>
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
+
+            <ProfissionaisCard
+                isOpen={modalAberto}
+                mode={modalMode}
+                id={selecionadoId}
+                onClose={() => setModalAberto(false)}
+                onSaved={carregar}
+            />
         </div>
     );
 }
